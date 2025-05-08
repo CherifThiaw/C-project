@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <limits.h>
-#include <unistd.h>
+#include <string.h>
 
 #define MAX_RESERVATIONS 100
 #define MAX_CODE_LENGTH 10
@@ -43,7 +42,7 @@ void sauvegarder() {
     }
 
     for (int i = 0; i < nb_reservations; i++) {
-        // Format modifié - %s au lieu de %[^\n] pour fprintf
+
         fprintf(f, "%d %s %s %s %d %d \"%s\" %d\n",
                 reservations[i].id,
                 reservations[i].salle,
@@ -68,7 +67,7 @@ void charger() {
     nb_reservations = 0;
     char ligne[256];
     while (fgets(ligne, sizeof(ligne), f) != NULL){
-        // Nouvelle méthode plus robuste
+
         int result = sscanf(ligne, "%d %9s %9s %9s %d %d \"%99[^\"]\" %d",
                           &reservations[nb_reservations].id,
                           reservations[nb_reservations].salle,
@@ -88,6 +87,42 @@ void charger() {
     printf("%d réservations chargées\n", nb_reservations);
 }
 
+bool salle_disponible(const char* salle, const char* jour, int heure_debut, int duree) {
+    int heure_fin = heure_debut + (duree / 60);
+
+    for (int i = 0; i < nb_reservations; i++) {
+        // On ne vérifie que les réservations confirmées/en cours
+        if (reservations[i].etat == ANNULEE || reservations[i].etat == TERMINEE) {
+            continue;
+        }
+
+        // Même salle et même jour
+        if (strcmp(reservations[i].salle, salle) == 0 &&
+            strcmp(reservations[i].jour, jour) == 0) {
+            int fin;
+            fin = reservations[i].heure_debut + (reservations[i].duree / 60);
+
+            // Vérification du chevauchement
+            if (heure_debut < fin && heure_fin > reservations[i].heure_debut) {
+                printf("Probleme avec votre réservation : %dh-%dh\n",
+                      reservations[i].heure_debut, fin);
+                return false;
+            }
+            }
+    }
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
 void ajouter_reservation() {
     if (nb_reservations >= MAX_RESERVATIONS) {
         printf("Erreur: Nombre maximum de réservations atteint.\n");
@@ -96,7 +131,7 @@ void ajouter_reservation() {
 
     Reservation r;
 
-    printf("\n--- Ajout d'une nouvelle réservation ---\n");
+    printf("\nAjout d'une nouvelle réservation \n");
 
     r.id = nb_reservations + 1;
 
@@ -118,10 +153,13 @@ void ajouter_reservation() {
     printf("Motif: ");
     scanf(" %99[^\n]", r.motif);
 
-    r.etat = RESERVEE;
+    if (!salle_disponible(r.salle, r.jour, r.heure_debut, r.duree)) {
+        printf("Erreur: La salle n'est pas disponible\n");
+        return;
+    }
 
-    reservations[nb_reservations] = r;
-    nb_reservations++;
+    r.etat = RESERVEE;
+    reservations[nb_reservations++] = r;
     sauvegarder();
     printf("Réservation ajoutée avec succès (ID: %d)\n", r.id);
 }
@@ -199,7 +237,7 @@ void menu_reservations() {
             case 1: ajouter_reservation(); break;
             case 2: afficher_reservations(); break;
             case 3: modifier_etat_reservation(); break;
-            case 0: printf("Au revoir!\n"); break;
+            case 0: printf("Fin\n"); break;
             default: printf("Choix invalide.\n");
         }
     } while (choix != 0);
