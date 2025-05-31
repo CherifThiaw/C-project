@@ -3,12 +3,17 @@
 #include <string.h>
 
 
+
+
+//Etape 1: Structure de donnée //Spécifier les différentes structures de données (salle, classe, réservation)
+                              //Spécifier le format des fichiers de sauvegarde
+                             //Définir les structures de données en C, ainsi que les listes correspondantes (tableaux).
 #define MAX_RESERVATIONS 100
-#define MAX_CODE_LENGTH 10
 #define NOMBRE_SALLES 100
 #define NOMBRE_CLASSES 100
 
 #define FICHIER_SAUVEGARDE "/Users/bayeabdoulaye/Documents/reservations_salles.txt"
+#define FICHIER_CLASSES "classes.txt"
 
 typedef enum {
     RESERVEE,
@@ -17,7 +22,6 @@ typedef enum {
     EN_COURS,
     TERMINEE
 } EtatReservation;
-
 typedef struct {
     int id;
     int salle;
@@ -50,6 +54,7 @@ Reservation reservations[MAX_RESERVATIONS];
 int nb_reservations = 0;
 int nb_salles = 0;
 int nb_classes = 0;
+//Fin de l'étape 1
 
 
 
@@ -61,84 +66,10 @@ int nb_classes = 0;
 
 
 
-// Cette partie contient les fonctions concernant les salles,
-//Implémenté par Bamba
-void initialiserSalles(Salle tableau[], int *n) {
-    strcpy(tableau[0].nom, "Salle-RC1");
-    tableau[0].code = 1;
-    strcpy(tableau[0].position, "Rez-de-chaussee");
-    strcpy(tableau[0].disponibilite_machine, "Pas-de-machine");
-    tableau[0].capacite = 70;
+//Etape 2: Gestion des salles//Spécifier les commandes liées à la gestion des salles
+                            //Implémenter les actions de création, affichage, modification et suppression d’ une salle
+                           // Tester les commandes selon des scénarios
 
-    strcpy(tableau[1].nom, "Salle-RC2");
-    tableau[1].code = 2;
-    strcpy(tableau[1].position, "Rez-de-chaussee");
-    strcpy(tableau[1].disponibilite_machine, "Pas-de-machine");
-    tableau[1].capacite = 58;
-
-    strcpy(tableau[2].nom, "Salle-RC3");
-    tableau[2].code = 3;
-    strcpy(tableau[2].position, "Rez-de-chaussee");
-    strcpy(tableau[2].disponibilite_machine, "Pas-de-machine");
-    tableau[2].capacite = 58;
-
-    strcpy(tableau[3].nom, "Salle-RC4");
-    tableau[3].code = 4;
-    strcpy(tableau[3].position, "Rez-de-chaussee");
-    strcpy(tableau[3].disponibilite_machine, "Pas-de-machine");
-    tableau[3].capacite = 90;
-
-    strcpy(tableau[4].nom, "Salle-TP1");
-    tableau[4].code = 5;
-    strcpy(tableau[4].position, "Premier-etage");
-    strcpy(tableau[4].disponibilite_machine, "Pas-de-machines");
-    tableau[4].capacite = 30;
-
-    strcpy(tableau[5].nom, "Salle-TP2");
-    tableau[5].code = 6;
-    strcpy(tableau[5].position, "Premier-etage");
-    strcpy(tableau[5].disponibilite_machine, "15-machines");
-    tableau[5].capacite = 15;
-
-    strcpy(tableau[6].nom, "Salle-tp-B-ext");
-    tableau[6].code = 7;
-    strcpy(tableau[6].position, "Premier-etage-batiment-extension");
-    strcpy(tableau[6].disponibilite_machine, "24-machines");
-    tableau[6].capacite = 24;
-
-    strcpy(tableau[7].nom, "Amphi-3");
-    tableau[7].code = 8;
-    strcpy(tableau[7].position, "Batiment-principal");
-    strcpy(tableau[7].disponibilite_machine, "Pas-de-machines");
-    tableau[7].capacite = 108;
-
-    strcpy(tableau[8].nom, "Salle-TP3");
-    tableau[8].code = 9;
-    strcpy(tableau[8].position, "Premier-etage");
-    strcpy(tableau[8].disponibilite_machine, "Pas-de-machines");
-    tableau[8].capacite = 30;
-
-    strcpy(tableau[9].nom, "Salle-doctorants");
-    tableau[9].code = 10;
-    strcpy(tableau[9].position, "Premier-etage");
-    strcpy(tableau[9].disponibilite_machine, "Pas-de-machines");
-    tableau[9].capacite = 30;
-
-    FILE *fichier = fopen("salles.txt", "w");
-    if (fichier == NULL) {
-        printf("Impossible d'ouvrir le fichier\n");
-        return;
-    }
-
-    for (int i = 0; i < 10; i++) {
-        fprintf(fichier, "Nom: %s\nCode unique: %d\nPosition: %s\nDisponibilite des machines: %s\nCapacite: %d\n\n",
-                tableau[i].nom, tableau[i].code, tableau[i].position,
-                tableau[i].disponibilite_machine, tableau[i].capacite);
-    }
-
-    fclose(fichier);
-    *n = 10;
-}
 
 int lireFichierSalles(Salle tableau[]) {
     FILE *fichier = fopen("salles.txt", "r");
@@ -147,19 +78,23 @@ int lireFichierSalles(Salle tableau[]) {
     }
 
     int i = 0;
-    while (!feof(fichier) && i < NOMBRE_SALLES) {
-        fscanf(fichier, "Nom: %[^\n]\n", tableau[i].nom);
+    while (i < NOMBRE_SALLES) {
+        int resultat = fscanf(fichier, "Nom: %[^\n]\n", tableau[i].nom);
+        if (resultat != 1) break;
+
         fscanf(fichier, "Code unique: %d\n", &tableau[i].code);
         fscanf(fichier, "Position: %[^\n]\n", tableau[i].position);
         fscanf(fichier, "Disponibilite des machines: %[^\n]\n", tableau[i].disponibilite_machine);
         fscanf(fichier, "Capacite: %d\n", &tableau[i].capacite);
-        fscanf(fichier, "\n"); // Ligne vide entre les blocs
+        fscanf(fichier, "\n");
         i++;
     }
 
     fclose(fichier);
     return i;
 }
+
+
 void afficherSalles() {
     FILE *fichier = fopen("salles.txt", "r");
     char contenu[200];
@@ -398,13 +333,233 @@ void menu_salles() {
         }
     } while (choix != 0);
 }
-//Fin des fonctions sur les salles
-//Fin
+
+//Fin de l'etape 2
+
+
+//Etape 3: Gestion des classes //Spécifier les commandes liées à la gestion des classes
+                              //Implémenter les actions de création, affichage, modification et suppression d’une classe
+                             //Tester les commandes selon des scénarios
+
+
+int chargerClasses(Classe *classes, int *nb_classes) {
+    FILE *fp = fopen(FICHIER_CLASSES, "r");
+    if (fp == NULL) {
+        printf("Aucune sauvegarde de classes trouvée\n");
+        return 0;
+    }
+
+    int n;
+    fscanf(fp, "%d\n", &n);
+
+    if (n > NOMBRE_CLASSES) {
+        printf("Erreur: Trop de classes dans le fichier\n");
+        fclose(fp);
+        return 0;
+    }
+
+    char buffer[100];
+
+    for (int i = 0; i < n; i++) {
+        fgets(buffer, sizeof(buffer), fp);
+        sscanf(buffer, "Code: %d", &classes[i].classe_id);
+
+        fgets(buffer, sizeof(buffer), fp);
+        sscanf(buffer, "Nom: %[^\n]", classes[i].classe_nom);
+
+        fgets(buffer, sizeof(buffer), fp);
+        sscanf(buffer, "Niveau: %[^\n]", classes[i].niveau);
+
+        fgets(buffer, sizeof(buffer), fp);
+        sscanf(buffer, "Effectif: %d", &classes[i].effectif);
+    }
+
+
+    fclose(fp);
+    *nb_classes = n;
+    return n;
+}
+
+
+void sauvegarderClasses(Classe *classes, int nb_classes) {
+    FILE *fp = fopen(FICHIER_CLASSES, "w");
+    if (fp == NULL) {
+        printf("Erreur d'ouverture du fichier classes!\n");
+        return;
+    }
+
+    fprintf(fp, "%d\n", nb_classes);
+
+    for (int i = 0; i < nb_classes; i++) {
+        fprintf(fp, "Code: %d\n", classes[i].classe_id);
+        fprintf(fp, "Nom: %s\n", classes[i].classe_nom);
+        fprintf(fp, "Niveau: %s\n", classes[i].niveau);
+        fprintf(fp, "Effectif: %d\n", classes[i].effectif);
+    }
+
+    fclose(fp);
+}
+
+
+void ajouterClasse(Classe *classes, int *nb_classes) {
+    if (*nb_classes >= NOMBRE_CLASSES) {
+        printf("Erreur: Nombre maximum de classes atteint\n");
+        return;
+    }
+
+    Classe nouvelle;
+
+    printf("\nAjout d'une nouvelle classe\n");
+    do {
+        printf("Code (entier positif unique): ");
+        scanf("%d", &nouvelle.classe_id);
+        getchar();
+
+        bool existe = false;
+        for (int i = 0; i < *nb_classes; i++) {
+            if (classes[i].classe_id == nouvelle.classe_id) {
+                printf("Ce code existe déjà!\n");
+                existe = true;
+                break;
+            }
+        }
+        if (!existe) break;
+    } while (true);
+
+    printf("Nom de la classe: ");
+    fgets(nouvelle.classe_nom, sizeof(nouvelle.classe_nom), stdin);
+    nouvelle.classe_nom[strcspn(nouvelle.classe_nom, "\n")] = '\0';
+
+    printf("Niveau: ");
+    fgets(nouvelle.niveau, sizeof(nouvelle.niveau), stdin);
+    nouvelle.niveau[strcspn(nouvelle.niveau, "\n")] = '\0';
+
+    do {
+        printf("Effectif: ");
+        scanf("%d", &nouvelle.effectif);
+    } while (nouvelle.effectif <= 0);
+
+    classes[*nb_classes] = nouvelle;
+    (*nb_classes)++;
+    sauvegarderClasses(classes, *nb_classes);
+    printf("Classe ajoutée avec succès!\n");
+}
+
+void afficherClasses(Classe *classes, int nb_classes) {
+    if (nb_classes == 0) {
+        printf("Aucune classe enregistrée\n");
+        return;
+    }
+
+    printf("\nListe des classes (%d):\n", nb_classes);
+    for (int i = 0; i < nb_classes; i++) {
+        printf("code: %d Nom: %s (Niveau: %s) - Effectif: %d\n",
+               classes[i].classe_id,
+               classes[i].classe_nom,
+               classes[i].niveau,
+               classes[i].effectif);
+    }
+}
+
+void rechercherClasse(Classe *classes, int nb_classes) {
+    int code;
+    printf("Code de la classe à rechercher: ");
+    scanf("%d", &code);
+
+    for (int i = 0; i < nb_classes; i++) {
+        if (classes[i].classe_id == code) {
+            printf("\nClasse trouvée:\n");
+            printf("Code: %d\n", classes[i].classe_id);
+            printf("Nom: %s\n", classes[i].classe_nom);
+            printf("Niveau: %s\n", classes[i].niveau);
+            printf("Effectif: %d\n", classes[i].effectif);
+            return;
+        }
+    }
+    printf("Classe non trouvée\n");
+}
+
+void modifierClasse(Classe *classes, int nb_classes) {
+    int code;
+    printf("Code de la classe à modifier: ");
+    scanf("%d", &code);
+    getchar();
+
+    for (int i = 0; i < nb_classes; i++) {
+        if (classes[i].classe_id == code) {
+            printf("Nouveau nom (actuel: %s): ", classes[i].classe_nom);
+            fgets(classes[i].classe_nom, sizeof(classes[i].classe_nom), stdin);
+            classes[i].classe_nom[strcspn(classes[i].classe_nom, "\n")] = '\0';
+
+            printf("Nouveau niveau (actuel: %s): ", classes[i].niveau);
+            fgets(classes[i].niveau, sizeof(classes[i].niveau), stdin);
+            classes[i].niveau[strcspn(classes[i].niveau, "\n")] = '\0';
+
+            do {
+                printf("Nouvel effectif (actuel: %d): ", classes[i].effectif);
+                scanf("%d", &classes[i].effectif);
+            } while (classes[i].effectif <= 0);
+
+            sauvegarderClasses(classes, nb_classes);
+            printf("Classe modifiée avec succès\n");
+            return;
+        }
+    }
+    printf("Classe non trouvée\n");
+}
+
+void supprimerClasse(Classe *classes, int *nb_classes) {
+    int code;
+    printf("Code de la classe à supprimer: ");
+    scanf("%d", &code);
+
+    for (int i = 0; i < *nb_classes; i++) {
+        if (classes[i].classe_id == code) {
+            for (int j = i; j < *nb_classes - 1; j++) {
+                classes[j] = classes[j + 1];
+            }
+            (*nb_classes)--;
+            sauvegarderClasses(classes, *nb_classes);
+            printf("Classe supprimée avec succès\n");
+            return;
+        }
+    }
+    printf("Classe non trouvée\n");
+}
+
+void menu_classes() {
+    int choix;
+    do {
+        printf("\nGESTION DES CLASSES\n");
+        printf("1. Ajouter une classe\n");
+        printf("2. Afficher toutes les classes\n");
+        printf("3. Rechercher une classe\n");
+        printf("4. Modifier une classe\n");
+        printf("5. Supprimer une classe\n");
+        printf("0. Retour au menu principal\n");
+        printf("Votre choix: ");
+        scanf("%d", &choix);
+
+        switch(choix) {
+            case 1: ajouterClasse(classes, &nb_classes); break;
+            case 2: afficherClasses(classes, nb_classes); break;
+            case 3: rechercherClasse(classes, nb_classes); break;
+            case 4: modifierClasse(classes, nb_classes); break;
+            case 5: supprimerClasse(classes, &nb_classes); break;
+            case 0: printf("Retour au menu principal\n"); break;
+            default: printf("Choix invalide\n");
+        }
+    } while (choix != 0);
+}
+
+//Fin etape 3
 
 
 
 
-
+//Etape 4: Gestion des reservations //Spécifier les commandes liées à la gestion des réservations
+                                    //Implémenter les actions de création, affichage,
+                                    //modification et suppression d’une réservation (avec contrôle des données salle et classe)
 
 
 /*ces trois fonctions permettrait de comparer les capacites entre une salle
@@ -414,6 +569,10 @@ void menu_salles() {
                         des capacites n'est pas enormes.
  */
 
+
+/*pour avoir la capacite de la salle dont le code est saisi, si le code de la salle saisi existe
+                                dans les salles(if (salles[i].code == code_salle)
+                            retourne sa capacite*/
 int capacite_salle(int code_salle) {
     for (int i = 0; i < nb_salles; i++) {
          if (salles[i].code == code_salle) {
@@ -423,6 +582,7 @@ int capacite_salle(int code_salle) {
     return -1;
 }
 
+//Meme objectif que la fonction si dessus
 int effectif_classe(int id_classe) {
     for (int i = 0; i < nb_classes; i++) {
         if (classes[i].classe_id == id_classe) {
@@ -432,6 +592,11 @@ int effectif_classe(int id_classe) {
     return -1;
 }
 
+
+/*Fonction qui prend comme parametres les valeurs retournées par les deux fonctions au dessus
+ ensuite compare les deux valeurs pour savoir si la salle peut accueillir la classe(return true)
+ par defaut return false
+ */
 
 bool verifier_capacite(int code_salle, int id_classe) {
     int capacite = capacite_salle(code_salle);
@@ -450,9 +615,32 @@ bool verifier_capacite(int code_salle, int id_classe) {
 ////Fin des fonctions sur les capacités/comparaison.
 
 
-/*La fonction qui suit permet de verifier lors d'un ajout de reservation
-  si à une heure donnée par l'utilisateur cette salle est deja reservee sauf les etat annulé ou terminé
- */
+
+
+//Fonction pour verifier si le jour est correctement saisi
+bool jour_valide(const char* jour) {
+    const char* jours_valides[] = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+    for (int i = 0; i < 7; i++) {
+        if (strcmp(jour, jours_valides[i]) == 0)
+            return true;
+    }
+    return false;
+}
+
+//Fonction pour verifier si l'heure saisi est entre 8h et 20h
+bool heure_valide(int heure) {
+    if (heure < 8 || heure > 20) {
+        printf("Erreur: l'heure doit être entre 8h et 20h\n");
+        return false;
+    }
+    return true;
+}
+
+/*cette fonction sera appele au niveau de la saisi des informations de reservations
+  donc apres saisi des informations on verifiera en comparant par rapport
+  aux reservations existante si une salle est reservée à la meme heure que la reservation
+  actuelle sauf les etats terminée et annulée
+*/
 bool salle_disponible(int salle, const char* jour, int heure_debut, int duree) {
     int heure_fin = heure_debut + (duree / 60);
 
@@ -471,7 +659,6 @@ bool salle_disponible(int salle, const char* jour, int heure_debut, int duree) {
     }
     return true;
 }
-///Fin etape verification des reservations et horaires
 
 void enregistrer_res() {
     FILE *f = fopen(FICHIER_SAUVEGARDE, "w");
@@ -505,17 +692,19 @@ void lirefichierRes() {
     nb_reservations = 0;
     char ligne[256];
     while (fgets(ligne, sizeof(ligne), f) != NULL) {
-        int result = sscanf(ligne, "%d %d %d %9s %d %d \"%99[^\"]\" %d",
+        int result;
+        result = sscanf(ligne, "%d %d %d %9s %d %d \"%99[^\"]\" %d",    //avec sscanf chaque ligne est lu completement et isolé
                           &reservations[nb_reservations].id,
                           &reservations[nb_reservations].salle,
                           &reservations[nb_reservations].classe,
                           reservations[nb_reservations].jour,
                           &reservations[nb_reservations].heure_debut,
                           &reservations[nb_reservations].duree,
-                          reservations[nb_reservations].motif,
-                          &reservations[nb_reservations].etat);
+                          reservations[nb_reservations].motif,          //avec fscanf si le champ motif contient
+                          &reservations[nb_reservations].etat);        //contient plusieurs mot et n'est pas entre guillemets seul le 1er mot
+                                                                            //serait lu
 
-        if (result == 8) {
+        if (result == 8) {   //verifie si toute les champs ont ete correctement lus
             nb_reservations++;
             if (nb_reservations >= MAX_RESERVATIONS) break;
         }
@@ -532,71 +721,110 @@ void ajouter_reservation() {
 
     Reservation r;
     printf("\nAjout d'une nouvelle réservation \n");
+    while(getchar() != '\n');
 
-    int id_saisi;
-    bool id_existe;
-
+    //saisi du code
+    bool id_valide;
     do {
-        id_existe = false;
+        id_valide = true;
         printf("ID de la réservation (entier unique) : ");
-        scanf("%d", &id_saisi);
+        scanf("%d", &r.id);
 
         for (int i = 0; i < nb_reservations; i++) {
-            if (reservations[i].id == id_saisi) {
+            if (reservations[i].id == r.id) {
                 printf("Erreur : cet ID existe déjà. Veuillez en choisir un autre.\n");
-                id_existe = true;
+                id_valide = false;
                 break;
             }
         }
-    } while (id_existe);
 
-    r.id = id_saisi;
+        if (id_valide && r.id <= 0) {
+            printf("Erreur : l'ID doit être un nombre positif.\n");
+            id_valide = false;
+        }
+    } while (!id_valide);
 
-    printf("Code de la salle: ");
-    scanf("%d", &r.salle);
-
-    printf("Code de la classe: ");
-    scanf("%d", &r.classe);
-
-    int codeClasse;
-    bool classeExiste = false;
+    //saisi du code de la salle
+    bool salle_existe;
     do {
+        salle_existe = false;
+        printf("Code de la salle: ");
+        scanf("%d", &r.salle);
+        while(getchar() != '\n'); // pour enlever le retour a la ligne \n
+
+        for (int i = 0; i < nb_salles; i++) {
+            if (salles[i].code == r.salle) {
+                salle_existe = true;
+                break;
+            }
+        }
+
+        if (!salle_existe) {
+            printf("Erreur : cette salle n'existe pas. Codes disponibles :\n");
+            for (int i = 0; i < nb_salles; i++) {
+                printf("- %d: %s\n", salles[i].code, salles[i].nom);
+            }
+        }
+    } while (!salle_existe);
+
+
+    //saisi du code de la classe
+    bool classeExiste;
+    do {
+        classeExiste = false;
         printf("Code de la classe: ");
-        scanf("%d", &codeClasse);
+        scanf("%d", &r.classe);
+        while(getchar() != '\n');
+
 
         for (int i = 0; i < nb_classes; i++) {
-            if (classes[i].classe_id == codeClasse) {
+            if (classes[i].classe_id == r.classe) {
                 classeExiste = true;
+                printf("Classe validée: %s (Effectif: %d)\n",
+                      classes[i].classe_nom, classes[i].effectif);
                 break;
             }
         }
 
+
         if (!classeExiste) {
-            printf("Erreur : cette classe n'existe pas. Veuillez entrer un code valide.\n");
+            printf("\nERREUR: Classe inexistante. Options valides:\n");
+            for (int i = 0; i < nb_classes; i++) {
+                printf("- %d: %s (Niveau: %s, Cap: %d)\n",
+                      classes[i].classe_id,
+                      classes[i].classe_nom,
+                      classes[i].niveau,
+                      classes[i].effectif);
+            }
         }
     } while (!classeExiste);
 
-    r.classe = codeClasse;
+    //saisi du jour
+    do {
+        printf("Jour (ex: Lundi): ");
+        scanf("%9s", r.jour);
+    } while (!jour_valide(r.jour));  //Fonction definit à la 611e ligne
 
-    printf("Jour: ");
-    scanf("%9s", r.jour);
+    //saisi de l'heure
+    do {
+        printf("Heure de début (8-20): ");
+        scanf("%d", &r.heure_debut);
+    } while (!heure_valide(r.heure_debut));  //Fonction definit à la 620e ligne
 
-    printf("Heure de début (8-20): ");
-    scanf("%d", &r.heure_debut);
-
+    //saisi de la durée
     printf("Durée en minutes: ");
     scanf("%d", &r.duree);
 
     printf("Motif: ");
     scanf(" %99[^\n]", r.motif);
 
-    //Attends code Haroun
-    /*if (!verifier_capacite(r.salle, r.classe)) {
+    //verification par rapport aux reservations existante
+    if (!verifier_capacite(r.salle, r.classe)) {   //Fonction definit à la 576e ligne
         printf("Erreur : la salle ne peut pas accueillir cette classe.\n");
         return;
-    }*/
+    }
 
-    if (!salle_disponible(r.salle, r.jour, r.heure_debut, r.duree)) {
+    if (!salle_disponible(r.salle, r.jour, r.heure_debut, r.duree)) {  //Fonction definit a la 583e ligne
         printf("Erreur: La salle n'est pas disponible\n");
         return;
     }
@@ -670,7 +898,7 @@ void rechercherRes_classe() {
     for (int i = 0; i < nb_reservations; i++) {
         if (reservations[i].classe == id_classe &&
             (reservations[i].etat == RESERVEE ||
-             reservations[i].etat == VALIDEE ||
+             reservations[i].etat == VALIDEE ||   //reservations = Reservation[100]
              reservations[i].etat == EN_COURS)) {
 
             printf("ID: %d | Salle: %d\n", reservations[i].id, reservations[i].salle);
@@ -765,6 +993,273 @@ void supprimerReservation() {
 }
 
 
+void afficherplansalle() {
+    int code_salle;
+    printf("Entrez le code de la salle pour voir son planning: ");
+    scanf("%d", &code_salle);
+
+
+    bool salle_existe = false;
+    char nom_salle[20] = "Inconnue";
+    for (int i = 0; i < nb_salles; i++) {
+        if (salles[i].code == code_salle) {
+            salle_existe = true;
+            strcpy(nom_salle, salles[i].nom);
+            break;
+        }
+    }
+
+    if (!salle_existe) {
+        printf("Erreur: Aucune salle trouvée avec ce code.\n");
+        return;
+    }
+
+
+    char nom_fichier[100];
+    sprintf(nom_fichier, "planning_salle_%d.txt", code_salle);
+    FILE *fichier = fopen(nom_fichier, "w");
+    if (fichier == NULL) {
+        printf("Impossible d'ouvrir ce fichier. %s\n", nom_fichier);
+        return;
+    }
+
+
+    const char* jours_semaine[] = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+
+
+    printf("\nPlanning - %s (Code: %d)\n", nom_salle, code_salle);
+    fprintf(fichier, "Planning - %s (Code: %d)\n", nom_salle, code_salle);
+
+
+    printf("Heure   |");
+    fprintf(fichier, "Heure   |");
+    for (int j = 0; j < 7; j++) {
+        printf(" %-10s|", jours_semaine[j]);
+        fprintf(fichier, " %-10s|", jours_semaine[j]);
+    }
+    printf("\n-------------------------------------------------------------------------------------\n");
+    fprintf(fichier, "\n-------------------------------------------------------------------------------------\n");
+
+    int heure;
+    for (heure = 8; heure <= 20; heure += 2) {
+        printf("%dh-%2dh |", heure, heure+2);
+        fprintf(fichier, "%dh-%dh |", heure, heure+2);
+
+        for (int j = 0; j < 7; j++) {
+            bool trouve = false;
+
+            for (int i = 0; i < nb_reservations; i++) {
+                if (reservations[i].salle == code_salle &&
+                    strcmp(reservations[i].jour, jours_semaine[j]) == 0 &&
+                    reservations[i].etat != ANNULEE) {
+
+                    int heure_fin = reservations[i].heure_debut + (reservations[i].duree / 60);
+
+                    if (reservations[i].heure_debut < heure+2 && heure_fin > heure) {
+                        printf(" %-10s|", reservations[i].motif);
+                        fprintf(fichier, " %-10s|", classes[i].classe_nom); // A remplacer par nom des classe(Haroun)
+                        trouve = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!trouve) {
+                printf(" %-10s|", "Libre");
+                fprintf(fichier, " %-10s|", "Libre");
+            }
+        }
+        printf("\n");
+        fprintf(fichier, "\n");
+    }
+
+
+
+    fclose(fichier);
+    printf("Planning aussi enregistré dans le fichier : %s\n", nom_fichier);
+}
+
+
+
+
+// Fonction pour compter les réservations d'une salle
+int compter_reservations_salle(int code_salle) {
+    int compteur = 0;
+    for (int i = 0; i < nb_reservations; i++) {
+        if (reservations[i].salle == code_salle && reservations[i].etat != ANNULEE) {
+            compteur++;
+        }
+    }
+    return compteur;
+}
+
+// Fonction pour afficher les salles les plus utilises
+void afficher_salles_plus_utilisees() {
+    printf("\nVoici la liste des salles les plus utilises\n");
+
+
+
+    int utilisations[NOMBRE_SALLES] = {0};
+
+    int i;
+    for (i = 0; i < nb_salles; i++) {
+        utilisations[i] = compter_reservations_salle(salles[i].code);
+    }
+
+    // Trier les salles par nombre d'utilisations
+    for (i = 0; i < nb_salles - 1; i++) {
+        for (int j = 0; j < nb_salles - i - 1; j++) {
+            if (utilisations[j] < utilisations[j+1]) {
+
+                int temp_util = utilisations[j];
+                utilisations[j] = utilisations[j+1];
+                utilisations[j+1] = temp_util;
+
+
+                Salle temp_salle = salles[j];
+                salles[j] = salles[j+1];
+                salles[j+1] = temp_salle;
+            }
+        }
+    }
+
+    // Afficher les salles par ordre décroissant d'utilisation
+    for (i = 0; i < nb_salles; i++) {
+        printf("%d. %s (Code: %d) - %d réservations\n",
+               i+1,
+               salles[i].nom,
+               salles[i].code,
+               utilisations[i]);
+    }
+
+
+    FILE *fichier = fopen("salles_utilisees.txt", "w");
+    if (fichier) {
+        fprintf(fichier, "SALLES LES PLUS UTILISEES\n");
+
+
+        for (i = 0; i < nb_salles; i++) {
+            fprintf(fichier, "%d. %s (Code: %d) - %d réservations\n",
+                    i+1,
+                    salles[i].nom,
+                    salles[i].code,
+                    utilisations[i]);
+        }
+
+        fclose(fichier);
+        printf("\nListe enregistrée dans 'salles_utilisees.txt'\n");
+    }
+
+
+}
+
+
+
+void edt() {
+    if (nb_classes == 0) {
+        printf("Aucune classe enregistrée.\n");
+        return;
+    }
+
+    printf("\nListe des classes disponibles:\n");
+    for (int i = 0; i < nb_classes; i++) {
+        printf("%d. %s (%s)\n", classes[i].classe_id, classes[i].classe_nom, classes[i].niveau);
+    }
+
+    int id_classe;
+    printf("\nEntrez l'ID de la classe: ");
+    scanf("%d", &id_classe);
+
+    bool classe_existe = false;
+    char nom_classe[50] = "Inconnue";
+    for (int i = 0; i < nb_classes; i++) {
+        if (classes[i].classe_id == id_classe) {
+            classe_existe = true;
+            strcpy(nom_classe, classes[i].classe_nom);
+            break;
+        }
+    }
+
+    if (!classe_existe) {
+        printf("Erreur: Aucune classe trouvée avec cet ID.\n");
+        return;
+    }
+
+    char nom_fichier[100];
+    sprintf(nom_fichier, "emploi_du_temps_%s.txt", nom_classe);
+
+    FILE *fichier = fopen(nom_fichier, "w");
+    if (fichier == NULL) {
+        printf("Impossible de créer le fichier %s\n", nom_fichier);
+        return;
+    }
+
+    const char* jours_semaine[] = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+
+    printf("\nEmploi du temps - Classe %s (ID: %d)\n", nom_classe, id_classe);
+    fprintf(fichier, "Emploi du temps - Classe %s (ID: %d)\n", nom_classe, id_classe);
+
+    printf("Heure   |");
+    fprintf(fichier, "Heure   |");
+    for (int j = 0; j < 7; j++) {
+        printf(" %-18s|", jours_semaine[j]);
+        fprintf(fichier, " %-18s|", jours_semaine[j]);
+    }
+    printf("\n-------------------------------------------------------------------------------------\n");
+    fprintf(fichier, "\n-------------------------------------------------------------------------------------\n");
+
+    for (int heure = 8; heure <= 20; heure += 2) {
+        printf("%dh-%2dh |", heure, heure+2);
+        fprintf(fichier, "%dh-%dh |", heure, heure+2);
+
+        for (int j = 0; j < 7; j++) {
+            bool trouve = false;
+
+            for (int i = 0; i < nb_reservations; i++) {
+                if (reservations[i].classe == id_classe &&
+                    strcmp(reservations[i].jour, jours_semaine[j]) == 0 &&
+                    reservations[i].etat != ANNULEE) {
+
+                    int heure_fin = reservations[i].heure_debut + (reservations[i].duree / 60);
+
+                    if (reservations[i].heure_debut < heure+2 && heure_fin > heure) {
+                        char nom_salle[20] = "Inconnue";
+                        for (int k = 0; k < nb_salles; k++) {
+                            if (salles[k].code == reservations[i].salle) {
+                                strcpy(nom_salle, salles[k].nom);
+                                break;
+                            }
+                        }
+
+                        char cours[6];
+                        strncpy(cours, reservations[i].motif, 5);
+                        cours[5] = '\0';
+
+
+                        char cellule[50];
+                        sprintf(cellule, "%-5s/%-5s", cours, nom_salle);
+
+                        printf(" %-18s|", cellule);
+                        fprintf(fichier, " %-18s|", cellule);
+                        trouve = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!trouve) {
+                printf(" %-18s|", "Libre");
+                fprintf(fichier, " %-18s|", "Libre");
+            }
+        }
+        printf("\n");
+        fprintf(fichier, "\n");
+    }
+
+    fclose(fichier);
+    printf("\nEmploi du temps enregistré dans %s\n", nom_fichier);
+}
+
 //Voici la fonction sur le menu des reservations
 void menu_reservations() {
     int choix;
@@ -776,6 +1271,9 @@ void menu_reservations() {
         printf("4. Rechercher les réservations d'une classe\n");
         printf("5. Rechercher les réservations d'une salle\n");
         printf("6. Supprimer une réservation\n");
+        printf("7. Afficher planning d'une salle\n");
+        printf("8. Emploi du temps\n");
+        printf("9. Voir salles les plus utilisées\n");
         printf("0. Retour au menu principal\n");
         printf("Votre choix: ");
         scanf("%d", &choix);
@@ -787,14 +1285,27 @@ void menu_reservations() {
             case 4: rechercherRes_classe(); break;
             case 5: rechercherRes_salle(); break;
             case 6: supprimerReservation(); break;
+            case 7: afficherplansalle(); break;
+            case 8: edt(); break;
+            case 9: afficher_salles_plus_utilisees(); break;
             case 0: printf("Retour au menu principal\n"); break;
             default: printf("Choix invalide.\n");
         }
     } while (choix != 0);
 }
 
+//Fin etape 4
 
 
+
+
+
+
+
+
+
+
+//        MENU PRINCIPAL
 //Voici le menu principal avec les reserv salles classes, ...
 void menu_principal() {
     int choix;
@@ -812,8 +1323,7 @@ void menu_principal() {
                 menu_salles();
                 break;
             case 3:
-                // // //Haroun
-                printf("Gestion des classes - Fonctionnalité à venir\n");
+                menu_classes();
                 break;
             case 0:
                 printf("Au revoir!\n");
@@ -833,15 +1343,20 @@ int main() {
     nb_salles = lireFichierSalles(salles);
     if (nb_salles == 0) {
         printf("Aucune salle trouvee, initialisation des salles par defaut...\n");
-        initialiserSalles(salles, &nb_salles);
     }
 
     lirefichierRes();
+
+    nb_classes = chargerClasses(classes, &nb_classes);
+    if (nb_classes == 0) {
+        printf("Aucune classe trouvee, initialisation vide...\n");
+    }
 
     menu_principal();
 
     enregistrer_res();
 
+    sauvegarderClasses(classes, nb_classes);
 
     return 0;
 }
